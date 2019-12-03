@@ -58,6 +58,7 @@ def render_template(*args, **kwargs):
         'current_user': current_user,
         'should_renew_fb_token': should_renew_fb_token,
         'current_term_id': util.get_current_term_id(),
+        'user_agent': flask.request.headers['User-Agent'] if 'User-Agent' in flask.request.headers else 'No Info',
     })
     return flask_render_template(*args, **kwargs)
 flask.render_template = render_template
@@ -1315,13 +1316,6 @@ def before_app_run():
         app.logger.addHandler(file_handler)
         logging.getLogger('').addHandler(file_handler)  # Root handler
 
-        from log_handler import HipChatHandler
-        hipchat_handler = HipChatHandler(s.HIPCHAT_TOKEN,
-                s.HIPCHAT_HACK_ROOM_ID, notify=True, color='red',
-                sender='Flask')
-        hipchat_handler.setLevel(logging.ERROR)
-        hipchat_handler.setFormatter(formatter)
-        logging.getLogger('').addHandler(hipchat_handler)
     else:
         logging.basicConfig(level=logging.DEBUG)
 

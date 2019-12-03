@@ -4,34 +4,9 @@
 
 Plan your courses
 
-## Getting up and running
-
-To set up your dev environment, run `make install`.
-
-We work inside a [virtualenv][], so remember to `source
-~/.virtualenv/rmc/bin/activate` whenever you're working within the repo.
-
-You should now be ready to boot the local server, with `make local`.
-
-Once it starts running, point your browser to http://localhost:5000/
-
-### MongoDB error on Linux
-
-If you are getting a connection refused error when trying to run `make local` and are on Linux, this is
-most likely due to MongoDB taking too long to start the first time it's run. To fix this, run `mongod --config config/mongodb_local.conf`
-and let it warm up for about 30 seconds to 1 minute. Then kill the process, and run `make local` again. It should work now.
-
-### Getting seed data
-
-Run the following to get some basic course data into the DB.
-
-```sh
-make init_data
-```
-
 ## Why RMC?
 
-It might seem funny that this repository and a bunch of the code references `rmc`.
+It might seem funny that this repository and much of the code references `rmc`.
 
 RMC stands for "Rate My Courses", which was the prototype name for this project
 before it was given the (slightly) better name of Flow.
@@ -40,9 +15,61 @@ Because of the profileration of this 3 letter prefix throughout the code, and th
 unfortunate coupling of the repository name and our python namespace, we decided
 to leave it be.
 
+## Getting up and running
+
+The fastest way to get started is to use Docker. This will let you run Flow 
+inside of a virtual machine to avoid dealing with package installation problems, 
+avoid polluting your development environment, and should take less 
+time.
+
+To get started, [install Docker][].
+
+Once you have docker installed, run:
+
+    $ make shell_in_docker
+
+This will download and run a Docker image with all of Flow's dependencies 
+already installed. Don't worry if you don't know what a Docker image is.
+
+Flow will only need to download the image once, so booting up in the future should 
+be much faster.
+
+Once the Docker image is downloaded and running, you should find yourself in a
+`/bin/bash` shell. This is running inside a Docker container (effectively a 
+virtual machine). Inside this container, the `rmc` repository can be found in 
+`/rmc`, which you should be in right after running `make shell_in_docker`.
+
+To start running Flow locally, run the following inside this new shell.
+
+    $ make local
+
+If you point your browser at http://localhost:5000/, you should now see the Flow 
+homepage running on your computer!
+
+Congratulations! You now have Flow running locally.
+
+[install Docker]: https://docs.docker.com/engine/installation/
+
+## Getting seed data
+
+To do anything interesting in Flow, you need data in your database. This is 
+where information about courses, professors, and scheduling information is 
+stored.
+
+To get started, open a new terminal (different from the one running `make 
+local`), and start a new shell inside Docker by running
+
+    $ make shell_in_docker
+
+Inside the Docker container, run the following to get some basic course data 
+into the DB
+
+    $ make init_data
+
 ## Directory structure
 
-If you're eager to dive into the code, you might want to read this first. This
+
+It may be helpful to read this document before diving into the code. This
 isn't exhaustive, but it should be enough to get you started if you want to contribute.
 
 - `config/`: Configuration for frameworks, databases, or anything that might vary between
@@ -80,8 +107,8 @@ isn't exhaustive, but it should be enough to get you started if you want to cont
 If you need a REPL to fool around with the database or test out some code, check
 out `tools/devshell.py`.
 
-It automatically loads some imports and connects to the database for you. This
-setup code can be found in `tools/devshell_eval.py`.
+To automatically load some imports and connect to a database, setup code can be
+found in `tools/devshell_eval.py`
 
 Here's what an example session might look like:
 
@@ -100,6 +127,7 @@ Here's what an example session might look like:
     Out[1]: [<User: David Hu>, <User: Mack Duan>, <User: Sandy Wu>, <User: Jamie Wong>]
 
 [virtualenv]: http://www.virtualenv.org/en/latest/
+
 
 
 ## Running tests
@@ -129,3 +157,23 @@ PYTHONPATH=.. nosetests server/api/v1_test.py
 When you're ready to contribute, take a look at [the contributing
 guidelines](https://github.com/UWFlow/rmc/blob/master/CONTRIBUTING.md) and our
 [style guide](https://github.com/UWFlow/rmc/wiki/Flow-Style-Guide).
+
+## Setting up without Docker
+
+If you'd prefer to avoid the docker route, you can install the dependencies 
+directly on your own machine.
+
+To set up your dev environment, run `make install`.
+
+We work inside a [virtualenv][], so remember to `source
+~/.virtualenv/rmc/bin/activate` whenever you're working within the repo.
+
+You should now be ready to boot the local server, with `make local`.
+
+Once it starts running, point your browser to http://localhost:5000/
+
+### MongoDB error on Linux
+
+If you are getting a connection refused error when trying to run `make local` and are on Linux, it is
+most likely due to MongoDB taking too long to start the first time it's run. To fix this, run `mongod --config config/mongodb_local.conf`
+and let it warm up for about 30 seconds to 1 minute. Then end the process, and run `make local` again. It should work now.

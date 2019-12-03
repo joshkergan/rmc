@@ -18,15 +18,14 @@ install_packages() {
 
     updated_apt_repo=""
 
-    # To get the most recent nodejs, later.
-    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
-        sudo add-apt-repository -y ppa:chris-lea/node.js
-        updated_apt_repo=yes
-    fi
-
-    # To get the most recent git.
-    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q git-core-ppa; then
-        sudo add-apt-repository -y ppa:git-core/ppa
+    # To get the latest LTS NodeJS
+    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource*; then
+        curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
+        VERSION=node_10.x
+        DISTRO="$(lsb_release -s -c)"
+        echo "deb https://deb.nodesource.com/$VERSION $DISTRO main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+        echo "deb-src https://deb.nodesource.com/$VERSION $DISTRO main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list
+        sudo apt-get update
         updated_apt_repo=yes
     fi
 
@@ -76,7 +75,7 @@ install_phantomjs() {
                 *) mach=x86_64;;
             esac
             sudo rm -rf phantomjs
-            wget "https://phantomjs.googlecode.com/files/phantomjs-1.9.2-linux-${mach}.tar.bz2" -O- | sudo tar xfj -
+            wget "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/phantomjs/phantomjs-1.9.2-linux-${mach}.tar.bz2" -O- | sudo tar xfj -
 
             sudo ln -snf /usr/local/share/phantomjs-1.9.2-linux-${mach}/bin/phantomjs /usr/local/bin/phantomjs
         )
@@ -105,7 +104,7 @@ install_chromedriver() {
 
 install_spark() {
     rm -rf spark
-    wget "http://apache.mirror.vexxhost.com/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz" -O tempfile
+    wget "https://archive.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz" -O tempfile
     mkdir spark
     tar xzf tempfile -C spark --strip-components=1
     rm tempfile

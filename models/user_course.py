@@ -6,7 +6,6 @@ import mongoengine as me
 import course
 import points as _points
 import professor
-import rating
 import review
 import rmc.shared.util as util
 import term
@@ -30,38 +29,13 @@ def get_user_course_modified_date(uc):
     return date
 
 
-class CritiqueCourse(me.Document):
-    meta = {
-        'indexes': [
-            'course_id',
-            'professor_id',
-        ],
-    }
-
-    # id = me.ObjectIdField(primary_key=True)
-
-    course_id = me.StringField(required=True)
-    # TODO(mack): need section_id or equiv
-    # course_id = me.StringField(required=True, unique_with='section_id')
-    # section_id = me.IntField(required=True)
-    professor_id = me.StringField(required=True)
-    term_id = me.StringField(required=True)
-
-    interest = me.EmbeddedDocumentField(rating.AggregateRating,
-                                        default=rating.AggregateRating())
-    easiness = me.EmbeddedDocumentField(rating.AggregateRating,
-                                        default=rating.AggregateRating())
-    overall_course = me.EmbeddedDocumentField(rating.AggregateRating,
-                                              default=rating.AggregateRating())
-    clarity = me.EmbeddedDocumentField(rating.AggregateRating,
-                                       default=rating.AggregateRating())
-    passion = me.EmbeddedDocumentField(rating.AggregateRating,
-                                       default=rating.AggregateRating())
-    overall_prof = me.EmbeddedDocumentField(rating.AggregateRating,
-                                            default=rating.AggregateRating())
-
-
 class MenloCourse(me.Document):
+    '''MenloCourse objects are sourced from another website
+
+    As such, they only have professor reviews. The course review
+    EmbeddedDocument will always be the default CourseReview
+    '''
+
     meta = {
         'indexes': [
             'course_id',
